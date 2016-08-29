@@ -1,0 +1,21 @@
+#!/bin/sh -e
+
+if [ $# -eq 0 ]
+then
+    printf "usage: $0 repo_name [username] [password]\n"
+    printf "\tusername: The GitHub username, defaults to $(whoami).\n"
+    printf "\tpassword: The GitHub user's password, prompted for if omitted.\n"
+    exit 1
+fi
+
+REPOSITORY=$1
+USERNAME=${2-$(whoami)}
+CREDENTIALS="$USERNAME"
+
+if [ ! -z "$3" ]
+then
+    CREDENTIALS="${CREDENTIALS}:$3"
+fi
+
+curl -u $CREDENTIALS https://api.github.com/user/repos -d "{\"name\":\"$REPOSITORY\"}"
+git remote add github git@github.com:${USERNAME}/${REPOSITORY}.git
